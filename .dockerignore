@@ -1,0 +1,8 @@
+venv/
+.env
+LICENSE
+.git/
+.idea/
+.github/
+
+**/.env

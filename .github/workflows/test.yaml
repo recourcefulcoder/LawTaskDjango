@@ -1,0 +1,24 @@
+name: tests
+
+on: ["workflow_dispatch", "push"]
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.12" ]
+    defaults:
+      run:
+        shell: sh
+    steps:
+      - name: Checkoout Code
+        uses: actions/checkout@v4
+
+      - name: Install Linting Tools
+        run: |
+          pip install --upgrade pip
+          pip install flake8 flake8-import-order flake8-print
+
+      - name: Run Linting
+        run: flake8 .
