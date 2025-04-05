@@ -18,6 +18,40 @@ Table of contents:
 
 ## API docs
 
+This application's API provides given methods:
+
+1. get_documents_metadata (**NOT_IMPLEMENTED**)
+- URL: /docs-meta
+- method allowed: GET
+- options: "category" (_optional_) - specifies category's name to get
+- description: gives metadata (i.e. name, eoNumber, etc.) about documents specified with options
+
+2. get_document_metadata
+- URL: /doc-meta/<document-id>/
+- method allowed: GET
+- options: -
+- description: Gives specific document's metadata based on it's id value
+
+3. get_documents
+- URL: /docs
+- method allowed: GET
+- options: "category" - specifies category's name to get
+- description: gives out documents (as pdf files), which were specified with options
+
+4. get_document
+- URL: /doc/<document-id>
+- method allowed: GET
+- options: -
+- description: gives document (as pdf files), based on it's ID provided
+
+5. get_category
+- URL: /categories
+- method allowed: GET
+- options: parent (_optional_) - specifies name of category whose children are requested to vb seen; <br>
+if omitted, gives out most high categories 
+- description: Gives list of categories sharing same specified parent (or on the top of the hierarchy, if not provided) 
+and their data - all database files, to be specific
+
 ## Running application instructions
 
 ### Docker Compose
@@ -31,7 +65,7 @@ docker compose up --build -d
 
 > [!NOTE]
 > application is run on port 8000. If you want to change this behaviour, adjust port 
-> mapping in Docker Compose 
+> mapping in docker-compose.yaml
 
 To stop an application, simply run
 ```bash
@@ -56,7 +90,6 @@ linting tool with given plugins:
 | -------- | ----- |
 | DJANGO_DEBUG | defines whether django application should be run in default mode; <br> set to _True_ for debug mode <br> considered to be _False_ by default |
 | DJANGO_SECRET_KEY | secret key, used for internal django's security operations (hashing, etc.) |
-| DJANGO_APPLICATION_PORT | defines which port service's docker container expose; <br> defaults to 8000 |
 |||
 | POSTGRES_USER | declares user of postgres DB (only in dev mode; in Docker Compose name 'postgres' is set explicitly) |
 | POSTGRES_PASSWORD | declares password for postgres user |

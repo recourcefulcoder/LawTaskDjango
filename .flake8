@@ -1,2 +1,2 @@
 [flake8]
-exclude = .git,.github,venv,__pycache__,personal
+exclude = .git,.github,venv,__pycache__,personal,**/migrations/
