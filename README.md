@@ -15,6 +15,7 @@ Table of contents:
 - [Code documentation](#code-documentation)
   - [Code style conventions](#code-style-conventions)  
   - [Environment variables](#environment-variables)
+  - [Database models description](#django-models)
 
 ## API docs
 
@@ -48,9 +49,20 @@ This application's API provides given methods:
 - URL: /categories
 - method allowed: GET
 - options: parent (_optional_) - specifies name of category whose children are requested to vb seen; <br>
-if omitted, gives out most high categories 
+if omitted, gives out most high categories. If many "parent" options are provided, only last one is taken into account.
 - description: Gives list of categories sharing same specified parent (or on the top of the hierarchy, if not provided) 
-and their data - all database files, to be specific
+and their data - all database files, to be specific. JSON structure is following:
+
+```json lines
+[
+  {
+    id: <category-id>,
+    name: <category-name>,
+    type_id: <category-type-id>,
+    block: <category-name>,
+  }
+]
+```
 
 ## Running application instructions
 
@@ -76,6 +88,10 @@ docker compose down
 Not defined yet
 
 ## Code documentation
+
+> [!IMPORTANT]
+> Hardcoded document types are loaded via fixture fixtures/hardcode.json
+
 ### Code style conventions
 Code must meet basic PEP8 style requirements + some additional ones. <br> 
 Code is considered to be properly formatted when it passes check of [flake8](https://pypi.org/project/flake8/) 
@@ -96,3 +112,20 @@ linting tool with given plugins:
 | POSTGRES_DB | declares name of the DB used |
 | DB_HOST | declares host which database is running on; <br> considered to be _localhost_ by default |
 | DB_PORT | port database is running on; considered to be [5432](https://www.postgresql.org/docs/current/runtime-config-connection.html#GUC-PORT) by default|
+
+### Django models
+
+Since project is written on django, tables are defined with django orm - being specific, with 
+these two models: Category and Document 
+
+#### Category model
+
+Categories are hierarchically organised; this model is inherited from [MPTTModel](https://django-mptt.readthedocs.io/en/latest/models.html) 
+of django-mptt library; on top of this model's attributes and methods, whose description you may find on the link higher,
+following attributes are added:
+- id
+- name - name of the document category o be shown on frontend
+- type_id - UUID of document type in [government web service](http://publication.pravo.gov.ru/) being parsed 
+- block - codename of the category to be used on [government API](http://publication.pravo.gov.ru/help) and this service's API
+- auto_updates - boolean field, defines whether this document type should be automatically parsed and updated within Celery task
+- parent - stores "block" value of parent's category 
