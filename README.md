@@ -10,8 +10,8 @@ Table of contents:
 -
 - [API documentation](#api-docs)
 - [Launching project instructions](#running-application-instructions)
-  - [With Docker Compose](#docker-compose) (preferred)
-  - [Manually](#manual-startup)
+  - [In production](#docker-compose) (with Docker Compose)
+  - [In developer regime](#running-in-dev-mode)
 - [Code documentation](#code-documentation)
   - [Code style conventions](#code-style-conventions)  
   - [Environment variables](#environment-variables)
@@ -84,8 +84,32 @@ To stop an application, simply run
 docker compose down
 ```
 
-### Manual startup
-Not defined yet
+### Running in dev mode
+1. setup PostgreSQL database
+2. create .env file in ```/lawproject``` directory and fill it properly (see [here](#environment-variables))
+3. create virtual environment and run it
+```bash
+python3 -m venv venv
+source venv/bin/activate 
+```
+4. install project dependencies
+
+```bash
+pip install --upgrade pip
+pip install requirements.txt
+```
+5. migrate database and fill it with document categories <br>
+For that from ```/lawproject``` directory run
+```bash
+python manage.py migrate
+python manage.py loaddata fixtures/categories.json
+```
+
+6. start a development server by running
+
+```bash
+python manage.py runserver
+```
 
 ## Code documentation
 
@@ -119,13 +143,29 @@ Since project is written on django, tables are defined with django orm - being s
 these two models: Category and Document 
 
 #### Category model
-
 Categories are hierarchically organised; this model is inherited from [MPTTModel](https://django-mptt.readthedocs.io/en/latest/models.html) 
 of django-mptt library; on top of this model's attributes and methods, whose description you may find on the link higher,
 following attributes are added:
+
 - id
-- name - name of the document category o be shown on frontend
-- type_id - UUID of document type in [government web service](http://publication.pravo.gov.ru/) being parsed 
-- block - codename of the category to be used on [government API](http://publication.pravo.gov.ru/help) and this service's API
-- auto_updates - boolean field, defines whether this document type should be automatically parsed and updated within Celery task
+- name - name of the document category to be shown on frontend
+- type_id - UUID of document type in government web service ([this one](http://publication.pravo.gov.ru/)) being parsed;
+if set to NULL; this category doesn't correspond to any DocumentType on government API, yet is considered
+parent category in this service.
+- block - codename of the category to be used on [government API](http://publication.pravo.gov.ru/help) and this service's API;
+<br><br>
+If set to NULL, represents that this Category isn't bound to any specific in government API, yet is a part of 
+internal service's hierarchical organisation of categories <br><br> 
+- auto_updates - boolean field, defines whether this document type should be automatically parsed and 
+updated within Celery task 
 - parent - stores "block" value of parent's category 
+
+#### Document model
+Attributes:
+- id
+- name - document formal name, to be shown on frontend
+- eoNumber - electronic publication number of the document ("номер электронного опубликования")
+- category - Django's [ForeignKey](https://docs.djangoproject.com/en/5.2/ref/models/fields/#django.db.models.ForeignKey) 
+field; relation to Category model; document's category
+- file - Django's [FileField](https://docs.djangoproject.com/en/5.2/ref/models/fields/#filefield); 
+actual file of the document

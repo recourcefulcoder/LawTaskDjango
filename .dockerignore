@@ -6,3 +6,4 @@ LICENSE
 .github/
 
 **/.env
+**/dev_utils

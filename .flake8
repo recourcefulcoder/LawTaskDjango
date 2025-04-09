@@ -1,2 +1,4 @@
 [flake8]
 exclude = .git,.github,venv,__pycache__,personal,**/migrations/
+per-file-ignores =
+    **/dev_utils/add_data.py: E402

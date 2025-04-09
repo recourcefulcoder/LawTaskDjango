@@ -4,9 +4,9 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Category(MPTTModel):
-    id = models.IntegerField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(null=False)
-    type_id = models.UUIDField(null=False, unique=True)
+    type_id = models.UUIDField(null=True)
     block = models.CharField(null=True)
     auto_updates = models.BooleanField(default=True)
 
